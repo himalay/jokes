@@ -1,0 +1,22 @@
+{
+  "name": "jokes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "cheerio": "^0.22.0",
+    "express": "^4.15.2",
+    "nedb": "^1.8.0",
+    "request": "^2.81.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
