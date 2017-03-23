@@ -13,7 +13,7 @@ db.count({}, (err, count) => {
 
         if (!count) {
             const maxPage = 310
-            let i = 10
+            let i = 1
             function fetchJokes(i) {
                 const URL = `http://onelinefun.com/${i}/`
                 console.log(URL)
