@@ -3,7 +3,7 @@ Jokes
 
 # How to
 #### Clone the repo
-`git@github.com:himalay/jokes.git`
+`git clone git@github.com:himalay/jokes.git`
 #### Install the dependencies
 `npm i`
 #### Run the app in dev mode
