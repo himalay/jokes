@@ -12,7 +12,7 @@ db.count({}, (err, count) => {
         if (err) return console.log(err)
 
         if (!count) {
-            const maxPage = 310
+            let maxPage = 0
             let i = 1
             function fetchJokes(i) {
                 const URL = `http://onelinefun.com/${i}/`
@@ -23,6 +23,9 @@ db.count({}, (err, count) => {
                     } else {
                         i++
                         let $ = cheerio.load(html)
+                        maxPage = maxPage || parseInt($('p.pagination > a:nth-child(5)').text())
+                        
+                        console.log(maxPage)
                         $('.oneliner p').map((index, el) => {
                             db.insert({joke: $(el).text()}, err => err && console.log(err))
                         })
