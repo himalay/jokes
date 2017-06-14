@@ -2,37 +2,64 @@ const express = require('express')
 const NeDB = require('nedb')
 const request = require('request')
 const cheerio = require('cheerio')
+const ontime = require('ontime')
 
 const app = express()
 
 const port = Number(process.env.PORT || 8080)
 const db = new NeDB({ filename: 'jokes.db', autoload: true })
-            
-db.count({}, (err, count) => {
+
+let maxPage = 0
+
+fetchJokes()
+
+ontime({ cycle: ['04:00:00'] }, ot => {
+    fetchJokes()
+    ot.done()
+})
+
+ function fetchJokes() {
+    request('http://onelinefun.com/1/', (err, response, html) => {
         if (err) return console.log(err)
 
-        if (!count) {
-            const maxPage = 310
-            let i = 1
-            function fetchJokes(i) {
-                const URL = `http://onelinefun.com/${i}/`
-                console.log(URL)
-                request(URL, (err, response, html) => {
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        i++
-                        let $ = cheerio.load(html)
-                        $('.oneliner p').map((index, el) => {
-                            db.insert({joke: $(el).text()}, err => err && console.log(err))
-                        })
-                    }
-                    if (i <= maxPage) fetchJokes(i)
-                })
+        let $ = cheerio.load(html)
+        const newMaxPage = +$('p.pagination > a:nth-child(5)').text()
+        db.count({}, (err, count) => {
+            if (err) return console.log(err)
+            if (!count || !maxPage) {
+                maxPage = maxPage || newMaxPage
+                fetchJokesLoop(1)
+            } else {
+                if (newMaxPage > maxPage) {
+                    maxPage = newMaxPage
+                    db.remove({},{multi:true}, (err, count) => {
+                        if (err) return console.log(err)
+                        fetchJokesLoop(1)
+                    })
+                }
             }
-            fetchJokes(i)
-        }
+        })
     })
+}
+
+ function fetchJokesLoop (i) {
+    const URL = `http://onelinefun.com/${i}/`
+    console.log(URL)
+    request(URL, (err, response, html) => {
+        if (err) {
+            console.log('request: ' + err)
+        } else {
+            i++
+            let $ = cheerio.load(html)
+            maxPage = maxPage || +$('p.pagination > a:nth-child(5)').text()
+            console.log('maxPage ' + maxPage)
+            $('.oneliner p').map((index, el) => {
+                db.insert({joke: $(el).text()}, err => err && console.log('insert error: '+ err))
+            })
+        }
+        if (i <= maxPage) fetchJokesLoop(i)
+    })
+}
 
 app.get('/', (req, res) => {
     db.count({}, (err, count) => {
