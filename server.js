@@ -11,7 +11,7 @@ const db = new NeDB({ filename: 'jokes.db', autoload: true })
 
 let maxPage = 0
 
-//fetchJokes()
+fetchJokes()
 
 ontime({ cycle: ['04:00:00'] }, ot => {
     fetchJokes()
@@ -108,5 +108,3 @@ app.get('/jokes/:page?', (req, res) => {
 app.listen(port, function () {
     console.log('Listening on port ' + port)
 })
-
-// db.insert({joke: 'more crazy jokes'}, err => err && console.log(err))
