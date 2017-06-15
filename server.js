@@ -11,7 +11,7 @@ const db = new NeDB({ filename: 'jokes.db', autoload: true })
 
 let maxPage = 0
 
-fetchJokes()
+//fetchJokes()
 
 ontime({ cycle: ['04:00:00'] }, ot => {
     fetchJokes()
@@ -76,20 +76,33 @@ app.get('/', (req, res) => {
 })
 
 app.get('/jokes/:page?', (req, res) => {
-    const page = req.params.page || 1
-    const size = 10
-    db
-        .find({})
-        .sort({updatedAt: -1})
-        .skip(page > 1
-            ? page * size
-            : 0)
-        .limit(size)
-        .exec(function (err, jokes) {
-            if (err) 
-                res.send(err)
-            res.json(jokes)
-        })
+    if (req.query.q) {
+        const joke = new RegExp(req.query.q)
+        console.log(joke)
+        db
+            .find({ joke })
+            .limit(20)
+            .exec(function (err, jokes) {
+                if (err) 
+                    res.send(err)
+                res.json(jokes)
+            })
+    } else {
+        const page = req.params.page || 1
+        const size = 10
+        db
+            .find({})
+            .skip(page > 1
+                ? page * size
+                : 0)
+            .limit(size)
+            .exec(function (err, jokes) {
+                if (err) 
+                    res.send(err)
+                res.json(jokes)
+            })
+    }
+    
 })
 
 app.listen(port, function () {
