@@ -118,6 +118,8 @@ app.get('/jokes/:page?', (req, res) => {
     
 })
 
+app.post('/test', (req, res) => res.json(req.body))
+
 app.listen(port, function () {
     console.log('Listening on port ' + port)
 })
