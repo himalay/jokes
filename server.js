@@ -3,6 +3,7 @@ const NeDB = require('nedb')
 const request = require('request')
 const cheerio = require('cheerio')
 const ontime = require('ontime')
+const bodyParser = require("body-parser")
 
 const app = express()
 
@@ -61,6 +62,7 @@ ontime({ cycle: ['04:00:00'] }, ot => {
     })
 }
 
+app.use(bodyParser.json())
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:8080')
